@@ -30,3 +30,9 @@ ujson==5.9.0
 uvicorn==0.29.0
 watchfiles==0.21.0
 websockets==12.0
+SQLAlchemy==2.0.29
+psycopg2==2.9.9
+bcrypt==4.0.1
+passlib[bcrypt]
+python-jose==3.3.0
+cryptography==42.0.5
