@@ -25,4 +25,17 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    id: Optional[str] = None
+    id: Optional[int] = None
+
+class ImageUpload(BaseModel):
+    path: str
+    name: str
+    size: str
+    type: str
+    dimensions: str
+
+class Image(ImageUpload):
+    #tu treba dodat mozda
+
+    class Config:
+        from_attributes = True
