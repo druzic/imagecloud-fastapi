@@ -34,8 +34,14 @@ class ImageUpload(BaseModel):
     type: str
     dimensions: str
 
-class Image(ImageUpload):
-    #tu treba dodat mozda
+class Image(BaseModel):
+    id: int
+    name: str
+    size: int
+    type: str
+    dimensions: str
+    owner_id: int
+    path: str
 
     class Config:
         from_attributes = True
