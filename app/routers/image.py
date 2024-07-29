@@ -72,3 +72,22 @@ async def get_image(full_path: str):
         raise HTTPException(status_code=404, detail="File not found")
 
     return FileResponse(full_path, media_type="image/png")
+
+
+@router.delete('/{image_id:path}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_image(image_id: str, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    print(image_id)
+    normalized_path = image_id.replace("/", "\\")
+    print(normalized_path)
+    image = db.query(models.Image).filter(models.Image.path == normalized_path, models.Image.owner_id == current_user.id).first()
+    print(image)
+    if image is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+
+    if os.path.exists(image_id):
+        os.remove(image_id)
+
+    db.delete(image)
+    db.commit()
+    print("Deleted")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
