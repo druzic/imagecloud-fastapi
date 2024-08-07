@@ -45,3 +45,14 @@ class Image(BaseModel):
 
     class Config:
         from_attributes = True
+
+class FolderCreate(BaseModel):
+    name: str
+
+class Folder(BaseModel):
+    id: int
+    name: str
+    owner_id: int
+
+    class Config:
+        orm_mode = True

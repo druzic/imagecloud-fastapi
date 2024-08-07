@@ -25,3 +25,9 @@ class Image(Base):
                         nullable=False, server_default=text('now()'))
     owner_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
+
+class Folder(Base):
+    __tablename__ = "folders"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
