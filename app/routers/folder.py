@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
 from .. import schemas, models, oauth2
 from ..database import get_db
@@ -22,3 +22,22 @@ def create_folder(folder: schemas.FolderCreate, db: Session = Depends(get_db), c
 def get_folders(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     folders = db.query(models.Folder).filter(models.Folder.owner_id == current_user.id).all()
     return folders
+
+@router.delete("/{folder_name:path}", status_code=status.HTTP_204_NO_CONTENT)
+def get_folders(folder_name: str, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    folder = db.query(models.Folder).filter(models.Folder.name == folder_name, models.Folder.owner_id == current_user.id).first()
+    db.delete(folder)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get('/{folder_name:path}')
+async def get_images_from_folder(folder_name: str, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+
+    folder = db.query(models.Folder).filter(models.Folder.name == folder_name, models.Folder.owner_id == current_user.id).first()
+    if folder is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    images = db.query(models.Image).filter(models.Image.owner_id == current_user.id, models.Image.folder == folder.id).all()
+
+    return images

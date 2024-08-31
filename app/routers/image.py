@@ -107,3 +107,4 @@ async def move_image_to_folder(request: schemas.FolderUpdate, db: Session = Depe
     db.refresh(image)
 
     return image
+
