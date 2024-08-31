@@ -56,3 +56,7 @@ class Folder(BaseModel):
 
     class Config:
         orm_mode = True
+
+class FolderUpdate(BaseModel):
+    image_path: str
+    folder: str

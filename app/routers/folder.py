@@ -21,5 +21,4 @@ def create_folder(folder: schemas.FolderCreate, db: Session = Depends(get_db), c
 @router.get("", response_model=list[schemas.Folder])
 def get_folders(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     folders = db.query(models.Folder).filter(models.Folder.owner_id == current_user.id).all()
-    print(folders[0].name)
     return folders

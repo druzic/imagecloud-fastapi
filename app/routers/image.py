@@ -91,3 +91,19 @@ async def delete_image(image_id: str, db: Session = Depends(get_db), current_use
     db.commit()
     print("Deleted")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.post('/change_folder', response_model=schemas.Folder, status_code=status.HTTP_200_OK)
+async def move_image_to_folder(request: schemas.FolderUpdate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+    image = db.query(models.Image).filter(models.Image.path == request.image_path, models.Image.owner_id == current_user.id).first()
+    if image is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+
+    folder = db.query(models.Folder).filter(models.Folder.name == request.folder, models.Folder.owner_id == current_user.id).first()
+    if folder is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+    print(folder.id)
+    image.folder = folder.id
+    db.commit()
+    db.refresh(image)
+
+    return image
