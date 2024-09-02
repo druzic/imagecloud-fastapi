@@ -32,3 +32,11 @@ class Folder(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
+class SharedFolders(Base):
+    __tablename__ = "shared_folders"
+    id = Column(Integer, primary_key=True, index=True)
+    folder_id = Column(Integer, ForeignKey("folders.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    shared_at = Column(TIMESTAMP(timezone=True),
+                        nullable=False, server_default=text('now()'))

@@ -55,8 +55,21 @@ class Folder(BaseModel):
     owner_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class FolderUpdate(BaseModel):
     image_path: str
     folder: str
+
+class SharedFolder(BaseModel):
+    folder: str
+    email: str
+
+class SharedFolderOut(BaseModel):
+    id: int
+    folder_id: int
+    user_id: int
+    shared_at: datetime
+
+    class Config:
+        from_attributes = True
