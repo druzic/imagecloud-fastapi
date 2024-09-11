@@ -34,17 +34,17 @@ def get_folders(folder_name: str, db: Session = Depends(get_db), current_user: i
 @router.get('/{folder_name:path}')
 async def get_images_from_folder(folder_name: str, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
 
-    folder = db.query(models.Folder).filter(models.Folder.name == folder_name, models.Folder.owner_id == current_user.id).first()
+    folder = db.query(models.Folder).filter(models.Folder.name == folder_name).first()
     if folder is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
 
-    images = db.query(models.Image).filter(models.Image.owner_id == current_user.id, models.Image.folder == folder.id).all()
+    images = db.query(models.Image).filter( models.Image.folder == folder.id).all()
 
     return images
 
 @router.post('/share', status_code=status.HTTP_201_CREATED, response_model=schemas.SharedFolderOut)
 async def share_folder(folder_name: schemas.SharedFolder, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-    print(folder_name)
+
 
     folder = db.query(models.Folder).filter(models.Folder.name == folder_name.folder, models.Folder.owner_id == current_user.id).first()
     if folder is None:
@@ -65,7 +65,6 @@ async def get_shared_folders(db: Session = Depends(get_db), current_user: int = 
     folders = db.query(models.Folder).filter(models.Folder.owner_id == current_user.id).all()
     share_folder = db.query(models.SharedFolders).filter(models.SharedFolders.user_id == current_user.id).all()
     for i in share_folder:
-        print(i ,"bbb")
         folders.append(db.query(models.Folder).filter(models.Folder.id == i.folder_id).first())
-
+    print(folders)
     return folders

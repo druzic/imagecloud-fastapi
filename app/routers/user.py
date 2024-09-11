@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from .. import schemas, models, utils
+from .. import schemas, models, utils, oauth2
 from ..database import get_db
 
 router = APIRouter(
@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.Token)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
@@ -16,7 +16,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return (new_user)
+    access_token = oauth2.create_access_token(data={"user_id": new_user.id, "user_email": new_user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/{id}", response_model=schemas.UserOut)
 def get_user(id: int, db: Session = Depends(get_db)):
